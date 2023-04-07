@@ -146,7 +146,6 @@
 
     onMount(async () => {
         accessToken = localStorage.getItem('access-token');
-        console.log(accessToken);
         if(!accessToken) {
             goto('/playlist/login');
             return;
@@ -161,6 +160,7 @@
         let playlistTracks = await getPlaylistTracks();
         let recommendations = await getRecommendations(playlistTracks);
         await createPlaylist(recommendations);
+        alert("Playlist " + newPlaylistName + " has been created!");
 	}
 
 </script>

@@ -1,5 +1,7 @@
 export const clientId = '64241a4ce1ce4f5f991b1c257ce0890b';
 export const redirectUri ='https://www.ekirshey.com/playlist/login'
+//export const redirectUri ='http://localhost:5173/playlist/login'
+
 
 // @ts-ignore
 export async function requestAccessToken(code) {
@@ -55,6 +57,6 @@ export async function refreshAccessToken() {
             }
             return response.json();
         })
-    console.log(response);
+
     localStorage.setItem('access-token', response.access_token);
 }
