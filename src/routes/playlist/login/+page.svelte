@@ -1,12 +1,11 @@
-<script>
+<script lang="ts">
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import { PUBLIC_CLIENT_ID, PUBLIC_REDIRECT_URI } from '$env/static/public'
     import { requestAccessToken } from "$lib/spotifyApi";
 
 
-    /** @param {number} length */
-    function generateRandomString(length) {
+    function generateRandomString(length: number) {
         let text = '';
         let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -16,8 +15,7 @@
         return text;
     }
 
-    /** @param {string | undefined} codeVerifier */
-    async function generateCodeChallenge(codeVerifier) {
+    async function generateCodeChallenge(codeVerifier: string | undefined) {
 
         // @ts-ignore
         function base64encode(string) {
@@ -67,7 +65,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         let code = urlParams.get('code');
         if(code) {
-            await requestAccessToken(code);
+            let accessToken = await requestAccessToken(code);
+            console.log(accessToken);
+            localStorage.setItem('access-token', accessToken.access_token);
             goto('/playlist');
         }
 	});

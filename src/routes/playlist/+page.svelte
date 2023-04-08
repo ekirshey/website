@@ -1,18 +1,17 @@
-<script>
-// @ts-nocheck
+<script lang="ts">
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
-    import { getUser, getPlaylists, getPlaylistTracks, getRecommendations, createPlaylist } from '$lib/spotifyApi.js'
+    import type { PublicUser, SimplifiedPlaylist } from "spotify-types";
+    import { createPlaylist, getPlaylistTracks, getPlaylists, getRecommendations, getUser  } from "$lib/spotifyApi";
 
     let accessToken;
 
-    let user;
-    let playlistItems = [];
+    let user : PublicUser;
+    let playlistItems : SimplifiedPlaylist[] = [];
 
-    /** @type {any} */
-    let selectedPlaylist;
+    let selectedPlaylist : SimplifiedPlaylist;
 
-    let newPlaylistName = '';
+    let newPlaylistName : string = '';
 
     onMount(async () => {
         accessToken = localStorage.getItem('access-token');
