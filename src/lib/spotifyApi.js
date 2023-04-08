@@ -1,7 +1,4 @@
-export const clientId = '64241a4ce1ce4f5f991b1c257ce0890b';
-export const redirectUri ='https://www.ekirshey.com/playlist/login'
-//export const redirectUri ='http://localhost:5173/playlist/login'
-
+import { PUBLIC_CLIENT_ID, PUBLIC_REDIRECT_URI } from '$env/static/public'
 
 // @ts-ignore
 export async function requestAccessToken(code) {
@@ -11,8 +8,8 @@ export async function requestAccessToken(code) {
     let body = new URLSearchParams({
         grant_type: 'authorization_code',
         code: code,
-        redirect_uri: redirectUri,
-        client_id: clientId,
+        redirect_uri: PUBLIC_REDIRECT_URI,
+        client_id: PUBLIC_CLIENT_ID,
         code_verifier: codeVerifier
     });
 
@@ -41,7 +38,7 @@ export async function refreshAccessToken() {
     let body = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: token,
-        client_id: clientId,
+        client_id: PUBLIC_CLIENT_ID,
     });
 
     const response = await fetch('https://accounts.spotify.com/api/token', {

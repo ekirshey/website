@@ -1,7 +1,8 @@
 <script>
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
-    import { clientId, redirectUri, requestAccessToken } from "../../../spotifyApi";
+    import { PUBLIC_CLIENT_ID, PUBLIC_REDIRECT_URI } from '$env/static/public'
+    import { requestAccessToken } from "$lib/spotifyApi";
 
 
     /** @param {number} length */
@@ -49,9 +50,9 @@
             localStorage.setItem('code-verifier', codeVerifier);
             let args = new URLSearchParams({
                 response_type: 'code',
-                client_id: clientId,
+                client_id: PUBLIC_CLIENT_ID,
                 scope: scope,
-                redirect_uri: redirectUri,
+                redirect_uri: PUBLIC_REDIRECT_URI,
                 state: state,
                 code_challenge_method: 'S256',
                 code_challenge: codeChallenge

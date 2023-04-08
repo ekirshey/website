@@ -2,7 +2,6 @@
 // @ts-nocheck
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
-    import { refreshAccessToken } from "../../spotifyApi";
 
     let accessToken;
 
