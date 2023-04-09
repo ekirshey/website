@@ -1,6 +1,6 @@
 import { PUBLIC_CLIENT_ID, PUBLIC_REDIRECT_URI } from '$env/static/public'
 import type { AccessToken, PublicUser, Recommendations, SimplifiedPlaylist, SimplifiedTrack, Track } from 'spotify-types';
-import { SeedType, type Seed } from './seed';
+import { SeedType, type Seed, type Property } from './recommendationSettings';
 
 function createGetRequest() {
     let accessToken = localStorage.getItem('access-token');
@@ -101,7 +101,7 @@ export async function getPlaylistTracks(playlist : SimplifiedPlaylist) : Promise
     return tracksList;
 }
 
-export async function getRecommendations(seeds : Seed[]) {
+export async function getRecommendations(seeds : Seed[], recommendationProperties : Property[]) {
     const recommendationsRequest = createGetRequest();
 
     let recommendations : string[] = [];
@@ -124,11 +124,17 @@ export async function getRecommendations(seeds : Seed[]) {
         }
     });
 
-    const searchParams = new URLSearchParams({
+    let recommendationParams : any = {
         seed_genres: genreSeeds.join(","),
         seed_tracks: trackSeeds.join(","),
         seed_artists: artistSeeds.join(",")
-    });
+    };
+
+    for(const property of recommendationProperties) {
+        recommendationParams[property.name] = property.value;
+    }
+
+    const searchParams = new URLSearchParams(recommendationParams);
 
     let searchParamsString = searchParams.toString();
 

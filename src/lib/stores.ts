@@ -1,6 +1,6 @@
 import type { Artist, Track } from 'spotify-types';
 import { writable, type Writable } from 'svelte/store';
-import type { Seed } from './seed';
+import type { Seed } from './recommendationSettings';
 
 export const sourceTracks : Writable<Track[]> = writable([]);
 export const sourceArtists : Writable<Artist[]> = writable([]);

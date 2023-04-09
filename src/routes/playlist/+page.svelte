@@ -4,7 +4,6 @@
     import {sourceTracks} from "$lib/stores"
 
     export let data;
-
 </script>
 
 <h1>Playlist Builder</h1>

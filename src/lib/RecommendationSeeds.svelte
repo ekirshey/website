@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { SeedType, type Seed } from '$lib/seed';
+    import { SeedType, type Seed } from '$lib/recommendationSettings';
   import type { Artist } from 'spotify-types';
     import { sourceArtists, sourceGenres, sourceTracks, seeds } from './stores';
+  import { getArtistsName } from './trackUtility';
     
     function addSeed() {
         $seeds.push({
@@ -16,12 +17,9 @@
         $seeds = $seeds;
     }
 
-    function getArtistsName(artist : Artist[]) {
-        return artist.map(a => a.name);
-    }
-
 </script>
 
+<!-- I suppose I should use css instead of a table -->
 <div>
     <table>
         {#each $seeds as seed, index}
