@@ -1,5 +1,6 @@
 import { PUBLIC_CLIENT_ID, PUBLIC_REDIRECT_URI } from '$env/static/public'
-import type { AccessToken, PlaylistTrack, PublicUser, Recommendations, SimplifiedPlaylist, SimplifiedTrack, Track } from 'spotify-types';
+import type { AccessToken, PublicUser, Recommendations, SimplifiedPlaylist, SimplifiedTrack, Track } from 'spotify-types';
+import { SeedType, type Seed } from './seed';
 
 function createGetRequest() {
     let accessToken = localStorage.getItem('access-token');
@@ -21,6 +22,18 @@ function createPostRequest(body : any) {
         body: JSON.stringify(body)
     };
 }
+
+function createPutRequest(body : any) {
+    let accessToken = localStorage.getItem('access-token');
+    return {
+        method: 'PUT',
+        headers: {
+            Authorization: 'Bearer ' + accessToken
+        },
+        body: JSON.stringify(body)
+    };
+}
+
 
 async function sendRequest(url : string, request: RequestInit | undefined) {
     return await fetch(url, request)
@@ -83,39 +96,47 @@ export async function getPlaylistTracks(playlist : SimplifiedPlaylist) : Promise
 
     let tracksList : Track[] = [];
 
-    for(let item of tracksResponse.items) {
-        tracksList.push(item.track);
-    }
+    tracksList = tracksResponse.items.map( (item: { track: Track; }) => item.track);
 
     return tracksList;
 }
 
-export async function getRecommendations(tracks: Track[]) {
+export async function getRecommendations(seeds : Seed[]) {
     const recommendationsRequest = createGetRequest();
 
-    let trackIds : string[] = tracks.map(el => {
-        return el.id;
+    let recommendations : string[] = [];
+
+    let genreSeeds : string[] = [];
+    let trackSeeds : string[] = [];
+    let artistSeeds : string[] = [];
+
+    seeds.forEach(seed => {
+        switch(seed.type) {
+            case SeedType.Genre:
+                genreSeeds.push(seed.id);
+                break;
+            case SeedType.Track:
+                trackSeeds.push(seed.id);
+                break;
+            case SeedType.Artist:
+                artistSeeds.push(seed.id);
+                break;
+        }
     });
 
-    trackIds = trackIds.sort((a, b) => 0.5 - Math.random());
-    /**
-     * @type {any[]}
-     */
-    let recommendations : string[] = [];
-    let idx = 0;
-    while( (idx < trackIds.length) && (recommendations.length < 100) ) {
-        
-        let seedTracks = trackIds.slice(idx, Math.min(idx+5, trackIds.length - idx));
-        const recommendationsResponse : Recommendations = await sendRequest(`https://api.spotify.com/v1/recommendations?seed_tracks=${seedTracks}`, 
-                                                                             recommendationsRequest);
+    const searchParams = new URLSearchParams({
+        seed_genres: genreSeeds.join(","),
+        seed_tracks: trackSeeds.join(","),
+        seed_artists: artistSeeds.join(",")
+    });
 
-        recommendationsResponse.tracks.forEach((element : SimplifiedTrack) => {
-            recommendations.push(element.uri);
-        });
-        idx += 5;
-    }
-    
-    return recommendations;
+    let searchParamsString = searchParams.toString();
+
+    const recommendationsResponse : Recommendations = await sendRequest(`https://api.spotify.com/v1/recommendations?${searchParamsString}`, 
+                                                                        recommendationsRequest);
+
+    console.log(recommendationsResponse);
+    return recommendationsResponse.tracks;
 }
 
 export async function createPlaylist(user : PublicUser, recommendations : string[], newPlaylistName : string) {
@@ -140,4 +161,10 @@ export async function getPlaylists(user : PublicUser) : Promise<SimplifiedPlayli
     const playlists = await sendRequest(`https://api.spotify.com/v1/users/${user.id}/playlists?offset=0&limit=40`, createGetRequest());
     
     return playlists.items;
+}
+
+export async function getRecommendationGenres() : Promise<string[]> {
+    const genresResponse = await sendRequest(`https://api.spotify.com/v1/recommendations/available-genre-seeds`, createGetRequest());
+    
+    return genresResponse.genres;
 }

@@ -43,7 +43,7 @@
 
         generateCodeChallenge(codeVerifier).then(codeChallenge => {
             let state = generateRandomString(16);
-            let scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public';
+            let scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-modify-playback-state';
 
             localStorage.setItem('code-verifier', codeVerifier);
             let args = new URLSearchParams({
@@ -66,7 +66,6 @@
         let code = urlParams.get('code');
         if(code) {
             let accessToken = await requestAccessToken(code);
-            console.log(accessToken);
             localStorage.setItem('access-token', accessToken.access_token);
             goto('/playlist');
         }
